@@ -1,5 +1,6 @@
 (function () {
-  const api = globalThis.TelDownloader;
+  const host = typeof globalThis !== "undefined" ? globalThis : window;
+  const api = host.TelDownloader;
   if (!api || !api.DownloadQueue || !api.createMediaSelector || !api.createDownloadPanel) return;
 
   const loadSettings = () => {
@@ -48,7 +49,7 @@
     dedupeEnabled: settings.dedupeEnabled,
     digestBlob: api.digestBlob,
     confirmDuplicate: (task, sha) =>
-      globalThis.confirm?.(
+      host.confirm?.(
         sha
           ? `检测到相同 SHA-256 文件，仍要下载 ${task.fileName} 吗？`
           : `文件可能已经下载过，仍要下载 ${task.fileName} 吗？`

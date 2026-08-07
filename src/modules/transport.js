@@ -7,10 +7,11 @@
     Object.assign(root.TelDownloader, api);
   }
 })(typeof globalThis !== "undefined" ? globalThis : window, function () {
+  const host = typeof globalThis !== "undefined" ? globalThis : window;
   const RANGE_PATTERN = /^bytes (\d+)-(\d+)\/(\d+)$/;
 
   const createTransport = ({
-    fetchImpl = globalThis.fetch,
+    fetchImpl = host.fetch,
     directoryStorage = null,
     browserDownload = null,
     sanitizeFileName = (name) => name,
@@ -22,10 +23,10 @@
   } = {}) => {
     const directBrowserDownload = (url, fileName) => {
       if (browserDownload) return browserDownload(url, fileName);
-      const anchor = globalThis.document.createElement("a");
+      const anchor = host.document.createElement("a");
       anchor.href = url;
       anchor.download = fileName;
-      globalThis.document.body.appendChild(anchor);
+      host.document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
     };

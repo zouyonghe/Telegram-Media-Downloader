@@ -4,14 +4,15 @@
     module.exports = api;
   } else {
     root.TelDownloader = root.TelDownloader || {};
-    Object.assign(root.TelDownloader, api);
+  Object.assign(root.TelDownloader, api);
   }
 })(typeof globalThis !== "undefined" ? globalThis : window, function () {
+  const host = typeof globalThis !== "undefined" ? globalThis : window;
   const STORAGE_KEY = "tel-downloader-dedupe-v1";
 
   const digestBlob = async (blob) => {
     const cryptoApi =
-      typeof unsafeWindow !== "undefined" ? unsafeWindow.crypto : globalThis.crypto;
+      typeof unsafeWindow !== "undefined" ? unsafeWindow.crypto : host.crypto;
     if (!cryptoApi?.subtle) return null;
     const buffer = await blob.arrayBuffer();
     const digest = await cryptoApi.subtle.digest("SHA-256", buffer);

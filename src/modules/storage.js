@@ -13,7 +13,11 @@
 
   const createDirectoryStorage = ({ indexedDBImpl } = {}) => {
     const pageWindow =
-      typeof unsafeWindow !== "undefined" ? unsafeWindow : globalThis;
+      typeof unsafeWindow !== "undefined"
+        ? unsafeWindow
+        : typeof globalThis !== "undefined"
+        ? globalThis
+        : window;
     const indexedDBApi = indexedDBImpl || pageWindow.indexedDB;
 
     const open = () =>

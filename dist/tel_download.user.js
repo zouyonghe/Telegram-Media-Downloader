@@ -911,7 +911,11 @@
 
   const createDirectoryStorage = ({ indexedDBImpl } = {}) => {
     const pageWindow =
-      typeof unsafeWindow !== "undefined" ? unsafeWindow : globalThis;
+      typeof unsafeWindow !== "undefined"
+        ? unsafeWindow
+        : typeof globalThis !== "undefined"
+        ? globalThis
+        : window;
     const indexedDBApi = indexedDBImpl || pageWindow.indexedDB;
 
     const open = () =>
@@ -994,14 +998,15 @@
     module.exports = api;
   } else {
     root.TelDownloader = root.TelDownloader || {};
-    Object.assign(root.TelDownloader, api);
+  Object.assign(root.TelDownloader, api);
   }
 })(typeof globalThis !== "undefined" ? globalThis : window, function () {
+  const host = typeof globalThis !== "undefined" ? globalThis : window;
   const STORAGE_KEY = "tel-downloader-dedupe-v1";
 
   const digestBlob = async (blob) => {
     const cryptoApi =
-      typeof unsafeWindow !== "undefined" ? unsafeWindow.crypto : globalThis.crypto;
+      typeof unsafeWindow !== "undefined" ? unsafeWindow.crypto : host.crypto;
     if (!cryptoApi?.subtle) return null;
     const buffer = await blob.arrayBuffer();
     const digest = await cryptoApi.subtle.digest("SHA-256", buffer);
@@ -1053,10 +1058,11 @@
     Object.assign(root.TelDownloader, api);
   }
 })(typeof globalThis !== "undefined" ? globalThis : window, function () {
+  const host = typeof globalThis !== "undefined" ? globalThis : window;
   const RANGE_PATTERN = /^bytes (\d+)-(\d+)\/(\d+)$/;
 
   const createTransport = ({
-    fetchImpl = globalThis.fetch,
+    fetchImpl = host.fetch,
     directoryStorage = null,
     browserDownload = null,
     sanitizeFileName = (name) => name,
@@ -1068,10 +1074,10 @@
   } = {}) => {
     const directBrowserDownload = (url, fileName) => {
       if (browserDownload) return browserDownload(url, fileName);
-      const anchor = globalThis.document.createElement("a");
+      const anchor = host.document.createElement("a");
       anchor.href = url;
       anchor.download = fileName;
-      globalThis.document.body.appendChild(anchor);
+      host.document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
     };
@@ -1601,7 +1607,8 @@
 
 
 (function () {
-  const api = globalThis.TelDownloader;
+  const host = typeof globalThis !== "undefined" ? globalThis : window;
+  const api = host.TelDownloader;
   if (!api || !api.DownloadQueue || !api.createMediaSelector || !api.createDownloadPanel) return;
 
   const loadSettings = () => {
@@ -1650,7 +1657,7 @@
     dedupeEnabled: settings.dedupeEnabled,
     digestBlob: api.digestBlob,
     confirmDuplicate: (task, sha) =>
-      globalThis.confirm?.(
+      host.confirm?.(
         sha
           ? `检测到相同 SHA-256 文件，仍要下载 ${task.fileName} 吗？`
           : `文件可能已经下载过，仍要下载 ${task.fileName} 吗？`
