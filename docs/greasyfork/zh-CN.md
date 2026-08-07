@@ -17,6 +17,10 @@
 ## 如何使用
 这个脚本仅适用于 Telegram 网页版。此脚本将为图片、GIF、视频和语音信息添加下载按钮，一键下载当前播放的媒体文件。
 
+构建版还支持在聊天外层直接勾选已经加载的图片和视频，点击“批量下载”加入下载队列。队列支持并发数设置（1-8，默认 3）、取消、失败重试和清理已完成任务。可在“设置”中选择下载目录；支持的 Chromium 浏览器会记住目录权限，其他浏览器使用浏览器默认下载目录。
+
+默认开启 SHA-256 去重：重复媒体 URL 会在下载前跳过；设置了自定义目录时，还会对文件内容计算 SHA-256，重复内容不会保留。可在设置中关闭。
+
 ![图片下载](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2VjNmU2ZDM0YTFlOWY4YTMzZDZmNjVlMDE2ODQ4OGY4N2E3MDFkNSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/lqCVcw0pCd2VA3zqoE/giphy.gif)
 ![GIF动图下载](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzYwMzM3ZTMzYmI1MzA4M2EyYmY0NTFlOTg4OWFhNjhjNDk5YTkzYiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/wnYzW4vwpPdeuo62nQ/giphy.gif)
 ![视频下载](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXcxYnJxaXMxcW05YW5rZ2YzZzE0bTU4aTBwYXI1N3pmdnVzbDFrdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EEPbblwmSpteAmwLls/giphy.gif)

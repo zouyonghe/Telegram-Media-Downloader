@@ -1,0 +1,10 @@
+{
+  "name": "telegram-media-downloader",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/tel_download.js && node --check src/batch-entry.js && node --check src/modules/settings.js && node --check src/modules/storage.js && node --check src/modules/dedupe.js && node --check src/modules/transport.js && node --check src/modules/queue.js && node --check src/modules/media-selector.js && node --check src/modules/panel.js"
+  }
+}

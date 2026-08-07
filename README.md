@@ -50,7 +50,13 @@ User scripts put you in control of your  browsing experience. Once installed, th
 
     (Note, If you are using Tampermonkey extension in a Chrome-based browser, following [instructions](https://www.tampermonkey.net/faq.php#Q209) to enable Developer Mode.)
     
-2. Open Tampermonkey Dashboard, drag & drop src/tel_download.js into it and clicks the "install" button
+2. Build the installable userscript:
+
+    ```bash
+    npm run build
+    ```
+
+3. Open Tampermonkey Dashboard, drag & drop `dist/tel_download.user.js` into it and click the "install" button.
 
 ## How to Use
 This script only works on Telegram Webapp.
@@ -58,6 +64,14 @@ This script only works on Telegram Webapp.
 For channels and chats that allow saving content, this script will have no effect. Please just use the official download button provided by the telegram webapp instead.
 
 For channels and chats that disable downloading and restrict saving content, this script will add the download button back for images, GIFs and videos.
+
+### Batch Downloads
+
+The built userscript scans image and video messages already loaded in the current chat. Select media directly on message cards, then use the batch toolbar to add them to the download queue. The queue supports progress, cancellation, retry, cleanup, and configurable concurrency from 1 to 8 (default 3).
+
+SHA-256 duplicate protection is enabled by default. Repeated media URLs are skipped before downloading; when a custom directory is selected, downloaded content is also hashed and matching content is removed instead of being kept twice. Disable this check from the Settings panel if needed.
+
+When no custom directory is configured, downloads use the browser's direct download stream to avoid buffering large media into page memory. Chromium browsers can persist a selected directory through the Settings panel; files are streamed directly into that directory. Browsers without the File System Access API fall back to the browser download directory.
 
 ![Image Download](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2VjNmU2ZDM0YTFlOWY4YTMzZDZmNjVlMDE2ODQ4OGY4N2E3MDFkNSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/lqCVcw0pCd2VA3zqoE/giphy.gif)
 ![GIF Download](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzYwMzM3ZTMzYmI1MzA4M2EyYmY0NTFlOTg4OWFhNjhjNDk5YTkzYiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/wnYzW4vwpPdeuo62nQ/giphy.gif)
