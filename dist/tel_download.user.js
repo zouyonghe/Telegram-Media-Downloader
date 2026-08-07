@@ -1360,6 +1360,14 @@
   }
 })(typeof globalThis !== "undefined" ? globalThis : window, function () {
   const MEDIA_SELECTOR = [
+    ".bubble img",
+    ".bubble video",
+    ".message img",
+    ".message video",
+    "[class*='message'] img",
+    "[class*='message'] video",
+    "[class*='media'] img",
+    "[class*='media'] video",
     ".bubble img.media-photo",
     ".bubble img.thumbnail",
     ".bubble video",
@@ -1370,7 +1378,9 @@
     "[data-message-id] video",
   ].join(",");
 
-  const getMediaUrl = (node) => node.currentSrc || node.src || node.querySelector?.("source")?.src || "";
+  const getMediaUrl = (node) =>
+    [node.currentSrc, node.src, node.querySelector?.("source")?.src]
+      .find((url) => url && !/^data:/.test(url)) || "";
 
   const findMessage = (node) =>
     node.closest?.(".bubble, .message, [data-mid], [data-message-id]") || node.parentElement;
@@ -1379,7 +1389,7 @@
 
   const extractMediaItem = (node, index = 0) => {
     const url = getMediaUrl(node);
-    if (!url || /^(blob:|data:)/.test(url)) return null;
+    if (!url || node.closest?.("#tel-batch-panel, .avatar, .profile-photo, .sticker")) return null;
     const message = findMessage(node);
     const messageId =
       message?.dataset?.messageId || message?.dataset?.mid || message?.getAttribute?.("data-mid");
@@ -1494,6 +1504,7 @@
     #tel-batch-panel button.secondary{background:#eef2f5;color:#25313c}
     #tel-batch-panel button.danger{background:#d9534f}
     #tel-batch-panel .tel-batch-toolbar{display:flex;gap:6px;align-items:center;padding:10px;border-bottom:1px solid #e7ebef}
+    #tel-batch-panel .tel-batch-drag-handle{cursor:move;user-select:none;padding:4px;color:#607080;font-weight:700}
     #tel-batch-panel .tel-batch-count{margin-left:auto;color:#607080}
     #tel-batch-panel .tel-batch-body{display:none;max-height:280px;overflow:auto;padding:8px}
     #tel-batch-panel.open .tel-batch-body{display:block}
@@ -1524,6 +1535,7 @@
     panel.setAttribute("aria-label", "Telegram batch downloader");
     panel.innerHTML = `
       <div class="tel-batch-toolbar">
+        <span class="tel-batch-drag-handle" title="拖动面板">::</span>
         <button class="secondary tel-batch-select">全选</button>
         <button class="tel-batch-start">批量下载</button>
         <button class="secondary tel-batch-toggle" aria-expanded="false">队列</button>
@@ -1546,6 +1558,28 @@
     const count = panel.querySelector(".tel-batch-count");
     const tasksNode = panel.querySelector(".tel-batch-tasks");
     const selectedButton = panel.querySelector(".tel-batch-select");
+    const dragHandle = panel.querySelector(".tel-batch-drag-handle");
+    let dragState = null;
+
+    const onPointerMove = (event) => {
+      if (!dragState) return;
+      panel.style.left = `${Math.max(0, dragState.left + event.clientX - dragState.x)}px`;
+      panel.style.top = `${Math.max(0, dragState.top + event.clientY - dragState.y)}px`;
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+    };
+    const onPointerUp = () => {
+      dragState = null;
+      documentRef.removeEventListener("pointermove", onPointerMove);
+      documentRef.removeEventListener("pointerup", onPointerUp);
+    };
+    dragHandle.onpointerdown = (event) => {
+      const rect = panel.getBoundingClientRect();
+      dragState = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top };
+      dragHandle.setPointerCapture?.(event.pointerId);
+      documentRef.addEventListener("pointermove", onPointerMove);
+      documentRef.addEventListener("pointerup", onPointerUp);
+    };
 
     panel.querySelector(".tel-batch-toggle").onclick = () => {
       panel.classList.toggle("open");
@@ -1596,6 +1630,7 @@
         });
       },
       destroy() {
+        onPointerUp();
         styleNode.remove();
         panel.remove();
       },

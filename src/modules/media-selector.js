@@ -8,6 +8,14 @@
   }
 })(typeof globalThis !== "undefined" ? globalThis : window, function () {
   const MEDIA_SELECTOR = [
+    ".bubble img",
+    ".bubble video",
+    ".message img",
+    ".message video",
+    "[class*='message'] img",
+    "[class*='message'] video",
+    "[class*='media'] img",
+    "[class*='media'] video",
     ".bubble img.media-photo",
     ".bubble img.thumbnail",
     ".bubble video",
@@ -18,7 +26,9 @@
     "[data-message-id] video",
   ].join(",");
 
-  const getMediaUrl = (node) => node.currentSrc || node.src || node.querySelector?.("source")?.src || "";
+  const getMediaUrl = (node) =>
+    [node.currentSrc, node.src, node.querySelector?.("source")?.src]
+      .find((url) => url && !/^data:/.test(url)) || "";
 
   const findMessage = (node) =>
     node.closest?.(".bubble, .message, [data-mid], [data-message-id]") || node.parentElement;
@@ -27,7 +37,7 @@
 
   const extractMediaItem = (node, index = 0) => {
     const url = getMediaUrl(node);
-    if (!url || /^(blob:|data:)/.test(url)) return null;
+    if (!url || node.closest?.("#tel-batch-panel, .avatar, .profile-photo, .sticker")) return null;
     const message = findMessage(node);
     const messageId =
       message?.dataset?.messageId || message?.dataset?.mid || message?.getAttribute?.("data-mid");

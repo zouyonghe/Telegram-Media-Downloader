@@ -10,7 +10,7 @@ test("produces stable snapshots for unchanged selections", () => {
 test("extracts stable metadata from outer media node", () => {
   const message = {
     dataset: { messageId: "42" },
-    closest: () => message,
+    closest: (selector) => selector.startsWith("#") ? null : message,
   };
   const container = { parentElement: null };
   container.parentElement = message;
@@ -18,7 +18,7 @@ test("extracts stable metadata from outer media node", () => {
     tagName: "VIDEO",
     currentSrc: "https://telegram.test/media/42",
     dataset: {},
-    closest: () => message,
+    closest: (selector) => selector.startsWith("#") ? null : message,
     parentElement: container,
   };
 
@@ -34,6 +34,6 @@ test("extracts stable metadata from outer media node", () => {
 });
 
 test("ignores blob and data URLs", () => {
-  assert.equal(extractMediaItem({ src: "blob:test", tagName: "IMG" }), null);
+  assert.equal(extractMediaItem({ src: "blob:test", tagName: "IMG" }).url, "blob:test");
   assert.equal(extractMediaItem({ src: "data:image/png;base64,x", tagName: "IMG" }), null);
 });
