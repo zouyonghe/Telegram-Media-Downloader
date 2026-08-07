@@ -45,11 +45,21 @@
     };
   };
 
+  const selectionSnapshot = (items) =>
+    items.map((item) => `${item.id}:${item.selected ? 1 : 0}`).join("|");
+
   const createMediaSelector = ({ root = document, onChange } = {}) => {
     const items = new Map();
     let observer = null;
+    let lastSnapshot = null;
 
-    const notify = () => onChange?.(Array.from(items.values()));
+    const notify = () => {
+      const values = Array.from(items.values());
+      const snapshot = selectionSnapshot(values);
+      if (snapshot === lastSnapshot) return;
+      lastSnapshot = snapshot;
+      onChange?.(values);
+    };
 
     const setSelected = (item, selected) => {
       item.selected = selected;
@@ -113,5 +123,5 @@
     };
   };
 
-  return { MEDIA_SELECTOR, extractMediaItem, createMediaSelector };
+  return { MEDIA_SELECTOR, extractMediaItem, selectionSnapshot, createMediaSelector };
 });

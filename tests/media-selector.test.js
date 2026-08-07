@@ -1,6 +1,11 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { extractMediaItem } = require("../src/modules/media-selector.js");
+const { extractMediaItem, selectionSnapshot } = require("../src/modules/media-selector.js");
+
+test("produces stable snapshots for unchanged selections", () => {
+  const items = [{ id: "one", selected: false }, { id: "two", selected: true }];
+  assert.equal(selectionSnapshot(items), selectionSnapshot(items.map((item) => ({ ...item }))));
+});
 
 test("extracts stable metadata from outer media node", () => {
   const message = {
